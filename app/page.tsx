@@ -1,1 +1,15 @@
-import Hero from \"./components/Hero\";\nimport Features from \"./components/Features\";\nimport DiscordWidget from \"./components/DiscordWidget\";\nimport Footer from \"./components/Footer\";\n\nexport default function Home() {\n  return (\n    <main className=\"w-full bg-black\">\n      <Hero />\n      <Features />\n      <DiscordWidget />\n      <Footer />\n    </main>\n  );\n}\n
+import Hero from "./components/Hero";
+import Features from "./components/Features";
+import DiscordWidget from "./components/DiscordWidget";
+import Footer from "./components/Footer";
+
+export default function Home() {
+  return (
+    <main className="w-full bg-black">
+      <Hero />
+      <Features />
+      <DiscordWidget />
+      <Footer />
+    </main>
+  );
+}

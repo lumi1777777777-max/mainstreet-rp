@@ -68,7 +68,7 @@ export default function MusicSuggestions() {
           songName: formData.songName,
           musicLink: formData.musicLink,
           suggestedBy: formData.suggestedBy,
-          timestamp: new Date().toLocaleString('et-EE'),
+          timestamp: new Date().toLocaleString('en-US'),
           platform: determinePlatform(formData.musicLink),
         };
 
@@ -76,7 +76,7 @@ export default function MusicSuggestions() {
         setEntries(updatedEntries);
         localStorage.setItem('musicSuggestions', JSON.stringify(updatedEntries));
 
-        setMessage(`✅ Muusika lisatud! Discord channel'ile saadetud!`);
+        setMessage(`✅ Music suggestion added! Message sent to Discord!`);
         setFormData({
           artist: '',
           songName: '',
@@ -87,7 +87,7 @@ export default function MusicSuggestions() {
         setTimeout(() => setMessage(''), 3000);
       }
     } catch (error: any) {
-      const errorMsg = error.response?.data?.error || error.message || 'Viga!';
+      const errorMsg = error.response?.data?.error || error.message || 'Error!';
       setMessage(`❌ ${errorMsg}`);
     } finally {
       setLoading(false);
@@ -98,10 +98,10 @@ export default function MusicSuggestions() {
     <section className="music-suggestions py-24 px-4 bg-black">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-5xl md:text-6xl font-black glow-green mb-4 text-center">
-          🎵 MUUSIKA SOOVITUSED
+          🎵 MUSIC SUGGESTIONS
         </h2>
         <p className="text-gray-400 text-center mb-12">
-          Lisa siia YouTube või Spotify muusika link - teade läheb Discord channel'ile!
+          Add YouTube or Spotify music links here - updates will be sent to Discord!
         </p>
 
         <div className="grid md:grid-cols-2 gap-8 mb-12">
@@ -109,12 +109,12 @@ export default function MusicSuggestions() {
           <div className="border-2 border-green-500 rounded-lg p-6 backdrop-blur-sm" style={{
             boxShadow: '0 0 20px rgba(0, 255, 0, 0.2)',
           }}>
-            <h3 className="text-2xl font-bold text-green-400 mb-6">Lisada uus muusika</h3>
+            <h3 className="text-2xl font-bold text-green-400 mb-6">Add New Music</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <input
                 type="text"
                 name="artist"
-                placeholder="Artisti nimi"
+                placeholder="Artist name"
                 value={formData.artist}
                 onChange={handleInputChange}
                 required
@@ -123,7 +123,7 @@ export default function MusicSuggestions() {
               <input
                 type="text"
                 name="songName"
-                placeholder="Laulu nimi"
+                placeholder="Song name"
                 value={formData.songName}
                 onChange={handleInputChange}
                 required
@@ -132,7 +132,7 @@ export default function MusicSuggestions() {
               <input
                 type="url"
                 name="musicLink"
-                placeholder="YouTube või Spotify link"
+                placeholder="YouTube or Spotify link"
                 value={formData.musicLink}
                 onChange={handleInputChange}
                 required
@@ -141,7 +141,7 @@ export default function MusicSuggestions() {
               <input
                 type="text"
                 name="suggestedBy"
-                placeholder="Sinu nimi"
+                placeholder="Your name"
                 value={formData.suggestedBy}
                 onChange={handleInputChange}
                 required
@@ -152,7 +152,7 @@ export default function MusicSuggestions() {
                 disabled={loading}
                 className="w-full px-6 py-3 bg-green-500 text-black font-bold rounded hover:bg-green-400 transition-all duration-300 disabled:opacity-50"
               >
-                {loading ? 'Saadatakse...' : '📤 Lisa muusika'}
+                {loading ? 'Submitting...' : '📤 Add Music'}
               </button>
             </form>
             {message && (
@@ -168,10 +168,10 @@ export default function MusicSuggestions() {
           <div className="border-2 border-green-500 rounded-lg p-6 backdrop-blur-sm" style={{
             boxShadow: '0 0 20px rgba(0, 255, 0, 0.2)',
           }}>
-            <h3 className="text-2xl font-bold text-green-400 mb-6">Statistika</h3>
+            <h3 className="text-2xl font-bold text-green-400 mb-6">Statistics</h3>
             <div className="space-y-4">
               <div className="bg-gray-800 p-4 rounded">
-                <div className="text-gray-400 text-sm">Kokku laulud</div>
+                <div className="text-gray-400 text-sm">Total Songs</div>
                 <div className="text-3xl font-bold text-green-400">{entries.length}</div>
               </div>
               <div className="bg-gray-800 p-4 rounded">
@@ -198,11 +198,11 @@ export default function MusicSuggestions() {
             <table className="w-full">
               <thead>
                 <tr className="bg-green-500 bg-opacity-10 border-b border-green-500">
-                  <th className="px-6 py-4 text-left text-green-400 font-bold">Plaat</th>
+                  <th className="px-6 py-4 text-left text-green-400 font-bold">Platform</th>
                   <th className="px-6 py-4 text-left text-green-400 font-bold">Artist</th>
-                  <th className="px-6 py-4 text-left text-green-400 font-bold">Laul</th>
-                  <th className="px-6 py-4 text-left text-green-400 font-bold">Lisanut</th>
-                  <th className="px-6 py-4 text-left text-green-400 font-bold">Aeg</th>
+                  <th className="px-6 py-4 text-left text-green-400 font-bold">Song</th>
+                  <th className="px-6 py-4 text-left text-green-400 font-bold">Suggested By</th>
+                  <th className="px-6 py-4 text-left text-green-400 font-bold">Date</th>
                   <th className="px-6 py-4 text-center text-green-400 font-bold">Link</th>
                 </tr>
               </thead>
@@ -210,7 +210,7 @@ export default function MusicSuggestions() {
                 {entries.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="px-6 py-8 text-center text-gray-400">
-                      Veel muusika pole lisatud...
+                      No music suggestions yet...
                     </td>
                   </tr>
                 ) : (
@@ -232,7 +232,7 @@ export default function MusicSuggestions() {
                           rel="noopener noreferrer"
                           className="text-green-400 hover:text-green-300 font-bold transition-colors"
                         >
-                          Avaa →
+                          Open →
                         </a>
                       </td>
                     </tr>

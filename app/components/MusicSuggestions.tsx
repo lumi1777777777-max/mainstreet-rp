@@ -8,6 +8,7 @@ interface MusicEntry {
   musicLink: string;
   timestamp: string;
   platform: 'YouTube' | 'Spotify';
+  thumbnail?: string;
 }
 
 export default function MusicSuggestions() {
@@ -35,6 +36,22 @@ export default function MusicSuggestions() {
     return 'Spotify';
   };
 
+  const extractYoutubeThumbnail = (link: string): string | undefined => {
+    let videoId: string | null = null;
+
+    if (link.includes('youtube.com')) {
+      const url = new URL(link);
+      videoId = url.searchParams.get('v');
+    } else if (link.includes('youtu.be')) {
+      videoId = link.split('/').pop()?.split('?')[0];
+    }
+
+    if (videoId) {
+      return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+    }
+    return undefined;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -44,11 +61,15 @@ export default function MusicSuggestions() {
       const response = await axios.post('/api/music/submit', { musicLink });
 
       if (response.data.success) {
+        const platform = determinePlatform(musicLink);
+        const thumbnail = platform === 'YouTube' ? extractYoutubeThumbnail(musicLink) : undefined;
+
         const newEntry: MusicEntry = {
           id: Date.now().toString(),
           musicLink,
           timestamp: new Date().toLocaleString('en-US'),
-          platform: determinePlatform(musicLink),
+          platform,
+          thumbnail,
         };
 
         const updatedEntries = [newEntry, ...entries];
@@ -70,7 +91,7 @@ export default function MusicSuggestions() {
 
   return (
     <section className="music-suggestions py-24 px-4 bg-black">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <h2 className="text-5xl md:text-6xl font-black glow-green mb-4 text-center">
           🎵 MUSIC SUGGESTIONS
         </h2>
@@ -135,49 +156,61 @@ export default function MusicSuggestions() {
           </div>
         </div>
 
-        {/* Table */}
-        <div className="border-2 border-green-500 rounded-lg overflow-hidden backdrop-blur-sm" style={{
-          boxShadow: '0 0 20px rgba(0, 255, 0, 0.2)',
-        }}>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-green-500 bg-opacity-10 border-b border-green-500">
-                  <th className="px-6 py-4 text-left text-green-400 font-bold">Platform</th>
-                  <th className="px-6 py-4 text-left text-green-400 font-bold">Link</th>
-                  <th className="px-6 py-4 text-left text-green-400 font-bold">Added</th>
-                </tr>
-              </thead>
-              <tbody>
-                {entries.length === 0 ? (
-                  <tr>
-                    <td colSpan={3} className="px-6 py-8 text-center text-gray-400">
-                      No suggestions yet...
-                    </td>
-                  </tr>
+        {/* Grid of Music Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {entries.length === 0 ? (
+            <div className="col-span-full text-center text-gray-400 py-12">
+              No suggestions yet...
+            </div>
+          ) : (
+            entries.map((entry) => (
+              <a
+                key={entry.id}
+                href={entry.musicLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group border-2 border-green-500 rounded-lg overflow-hidden backdrop-blur-sm hover:scale-105 transition-transform duration-300"
+                style={{
+                  boxShadow: '0 0 20px rgba(0, 255, 0, 0.2)',
+                }}
+              >
+                {/* Image */}
+                {entry.thumbnail ? (
+                  <div className="relative w-full aspect-video bg-gray-800 overflow-hidden">
+                    <img
+                      src={entry.thumbnail}
+                      alt="Music thumbnail"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-black bg-opacity-40 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                      <span className="text-4xl">🎥</span>
+                    </div>
+                  </div>
                 ) : (
-                  entries.map((entry) => (
-                    <tr key={entry.id} className="border-b border-gray-700 hover:bg-gray-800 bg-opacity-50 transition-colors">
-                      <td className="px-6 py-4 text-2xl">
-                        {entry.platform === 'YouTube' ? '🎥' : '🎵'}
-                      </td>
-                      <td className="px-6 py-4">
-                        <a
-                          href={entry.musicLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-green-400 hover:text-green-300 font-bold transition-colors truncate"
-                        >
-                          {entry.musicLink}
-                        </a>
-                      </td>
-                      <td className="px-6 py-4 text-gray-400 text-sm">{entry.timestamp}</td>
-                    </tr>
-                  ))
+                  <div className="w-full aspect-video bg-gradient-to-br from-green-600 to-green-900 flex items-center justify-center">
+                    <span className="text-5xl">🎵</span>
+                  </div>
                 )}
-              </tbody>
-            </table>
-          </div>
+
+                {/* Info */}
+                <div className="p-4 bg-gray-900 group-hover:bg-gray-800 transition-colors">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-2xl">
+                      {entry.platform === 'YouTube' ? '🎥' : '🎵'}
+                    </span>
+                    <span className="text-sm text-gray-400">{entry.platform}</span>
+                  </div>
+                  <div className="text-xs text-gray-500">{entry.timestamp}</div>
+                  <div className="text-green-400 text-sm mt-2 truncate hover:text-green-300">
+                    Open →
+                  </div>
+                </div>
+              </a>
+            ))
+          )}
         </div>
       </div>
     </section>

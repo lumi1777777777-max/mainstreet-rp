@@ -2,12 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
-    const { artist, songName, musicLink, suggestedBy } = await req.json();
+    const { musicLink } = await req.json();
 
-    // Validate input
-    if (!artist || !songName || !musicLink || !suggestedBy) {
+    if (!musicLink) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Music link is required' },
         { status: 400 }
       );
     }
@@ -40,8 +39,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Determine platform emoji
+    // Determine platform emoji and color
     const platformEmoji = isYouTube ? '🎥' : '🎵';
+    const platformName = isYouTube ? 'YouTube' : 'Spotify';
+    const color = isYouTube ? 0xFF0000 : 0x1DB954;
 
     // Send to Discord
     const discordMessage = {
@@ -49,32 +50,17 @@ export async function POST(req: NextRequest) {
       embeds: [
         {
           title: `${platformEmoji} New Music Suggestion!`,
-          color: isYouTube ? 0xFF0000 : 0x1DB954,
+          color,
           fields: [
             {
-              name: 'Artist',
-              value: artist,
-              inline: true,
-            },
-            {
-              name: 'Song',
-              value: songName,
-              inline: true,
-            },
-            {
-              name: 'Suggested by',
-              value: suggestedBy,
-              inline: true,
-            },
-            {
               name: 'Platform',
-              value: isYouTube ? 'YouTube' : 'Spotify',
+              value: platformName,
               inline: true,
             },
             {
               name: 'Link',
-              value: `[Click here](${musicLink})`,
-              inline: false,
+              value: `[${platformName} Link](${musicLink})`,
+              inline: true,
             },
           ],
           timestamp: new Date().toISOString(),

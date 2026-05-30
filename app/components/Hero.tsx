@@ -4,6 +4,16 @@ import { useEffect, useState } from 'react';
 
 export default function Hero() {
   const [countdown, setCountdown] = useState<string>('');
+  const [matrixChars, setMatrixChars] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Matrix effect
+    const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+    const newChars = Array(15)
+      .fill(0)
+      .map(() => chars[Math.floor(Math.random() * chars.length)]);
+    setMatrixChars(newChars);
+  }, []);
 
   useEffect(() => {
     // 6. juuni 2026 01:00 EEST = 5. juuni 2026 22:00 UTC
@@ -33,39 +43,32 @@ export default function Hero() {
 
   return (
     <section className="hero relative min-h-screen flex items-center justify-center bg-black overflow-hidden">
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-green-500 rounded-full mix-blend-multiply filter blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl"></div>
+      {/* Background with gradient and matrix effect */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-gray-900 to-black opacity-80"></div>
+        
+        {/* Matrix rain effect */}
+        <div className="absolute inset-0 overflow-hidden opacity-20">
+          {matrixChars.map((char, i) => (
+            <div
+              key={i}
+              className="absolute glow-green text-sm font-mono animate-pulse"
+              style={{
+                left: `${(i * 100) / matrixChars.length}%`,
+                top: `${Math.random() * 100}%`,
+                animation: `fall ${3 + Math.random() * 2}s linear infinite`,
+              }}
+            >
+              {char}
+            </div>
+          ))}
+        </div>
+
+        {/* Glow orbs */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-green-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
       </div>
 
       <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
-        <h1 className="text-8xl md:text-9xl font-black mb-4 glow-green animate-pulse-glow">
-          MSRP
-        </h1>
-        <p className="text-xl md:text-2xl text-gray-300 mb-6 font-light">
-          THIS AIN'T ANOTHER CITY. THIS IS MAINSTREET.
-        </p>
-
-        {/* Countdown */}
-        <div className="mb-8 text-3xl md:text-4xl glow-green font-mono font-bold">
-          {countdown ? `⏱️ ${countdown}` : 'Loading...'}
-        </div>
-        <p className="text-gray-400 mb-8 text-lg">Server launch: 6. juuni 2026 kell 1:00 AM EEST</p>
-
-        <div className="flex flex-col md:flex-row gap-4 justify-center items-center mt-8">
-          <a
-            href="https://discord.gg/UXMxcP86"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-8 py-4 bg-green-500 text-black font-bold rounded-lg hover:bg-green-400 transition-all duration-300 text-lg neon-border animate-slide-up"
-          >
-            🎮 JOIN THE CITY
-          </a>
-          <button className="px-8 py-4 border-2 border-green-500 text-green-500 font-bold rounded-lg hover:bg-green-500 hover:text-black transition-all duration-300 text-lg">
-            LEARN MORE
-          </button>
-        </div>
-      </div>
-    </section>
-  );
-}
+        {/* Logo area with neon border */}
+        <div className="mb-8 inline-block border-2 border-green-500 rounded-lg p-8 backdrop-blur-sm hover:shadow-2xl transition-all duration-300\" style={{\n          boxShadow: '0 0 20px #00ff00, inset 0 0 20px rgba(0, 255, 0, 0.1)',\n        }}>\n          <h1 className=\"text-8xl md:text-9xl font-black mb-2 glow-green animate-pulse-glow\" style={{\n            textShadow: '0 0 30px #00ff00, 0 0 60px #00ff00, 0 0 90px #00ff00',\n          }}>\n            MSRP\n          </h1>\n          <div className=\"text-green-400 text-sm font-mono\">&gt; MainStreet RP</div>\n        </div>\n\n        <p className=\"text-xl md:text-2xl text-gray-300 mb-8 font-light\">\n          THIS AIN'T ANOTHER CITY. THIS IS MAINSTREET.\n        </p>\n\n        {/* Matrix code line */}\n        <div className=\"mb-8 text-green-500 text-xs font-mono opacity-60\">\n          &gt; System online // Ready to connect // 01110100 01101000 01101001 01110011\n        </div>\n\n        {/* Countdown */}\n        <div className=\"mb-8 text-3xl md:text-4xl glow-green font-mono font-bold\" style={{\n          textShadow: '0 0 20px #00ff00',\n        }}>\n          {countdown ? `⏱️ ${countdown}` : 'Loading...'}\n        </div>\n        <p className=\"text-gray-400 mb-12 text-lg\">Server launch: 6. juuni 2026 kell 1:00 AM EEST</p>\n\n        <div className=\"flex flex-col md:flex-row gap-4 justify-center items-center mt-8\">\n          <a\n            href=\"https://discord.gg/UXMxcP86\"\n            target=\"_blank\"\n            rel=\"noopener noreferrer\"\n            className=\"px-8 py-4 bg-green-500 text-black font-bold rounded-lg hover:bg-green-400 transition-all duration-300 text-lg neon-border animate-slide-up hover:scale-105\"\n          >\n            🎮 JOIN THE CITY\n          </a>\n          <button className=\"px-8 py-4 border-2 border-green-500 text-green-500 font-bold rounded-lg hover:bg-green-500 hover:text-black transition-all duration-300 text-lg hover:scale-105\">\n            LEARN MORE\n          </button>\n        </div>\n      </div>\n\n      <style jsx>{`\n        @keyframes fall {\n          0% {\n            transform: translateY(-100vh) rotate(360deg);\n            opacity: 1;\n          }\n          100% {\n            transform: translateY(100vh) rotate(0deg);\n            opacity: 0;\n          }\n        }\n      `}</style>\n    </section>\n  );\n}\n

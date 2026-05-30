@@ -17,14 +17,17 @@ export default function MusicSuggestions() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
-  // Load from localStorage
+  // Load from localStorage on mount
   useEffect(() => {
-    const stored = localStorage.getItem('musicSuggestions');
-    if (stored) {
-      try {
-        setEntries(JSON.parse(stored));
-      } catch (error) {
-        console.error('Error loading suggestions:', error);
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('musicSuggestions');
+      if (stored) {
+        try {
+          setEntries(JSON.parse(stored));
+        } catch (error) {
+          console.error('Error loading suggestions:', error);
+          localStorage.removeItem('musicSuggestions');
+        }
       }
     }
   }, []);
@@ -74,7 +77,10 @@ export default function MusicSuggestions() {
 
         const updatedEntries = [newEntry, ...entries];
         setEntries(updatedEntries);
-        localStorage.setItem('musicSuggestions', JSON.stringify(updatedEntries));
+        
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('musicSuggestions', JSON.stringify(updatedEntries));
+        }
 
         setMessage(`✅ Music added to Discord!`);
         setMusicLink('');
@@ -159,8 +165,26 @@ export default function MusicSuggestions() {
         {/* Grid of Music Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {entries.length === 0 ? (
-            <div className="col-span-full text-center text-gray-400 py-12">
-              No suggestions yet...
+            <div className="col-span-full">
+              <div className="text-center text-gray-400 py-12 mb-8">
+                No suggestions yet...
+              </div>
+              {/* Demo Card */}
+              <div className="mx-auto w-full max-w-xs border-2 border-green-500 rounded-lg overflow-hidden backdrop-blur-sm hover:scale-105 transition-transform duration-300 cursor-pointer" style={{
+                boxShadow: '0 0 20px rgba(0, 255, 0, 0.2)',
+              }}>
+                <div className="relative w-full aspect-video bg-gradient-to-br from-red-600 to-red-900 flex items-center justify-center overflow-hidden">
+                  <div className="text-6xl">🎥</div>
+                </div>
+                <div className="p-4 bg-gray-900">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-2xl">🎥</span>
+                    <span className="text-sm text-gray-400">YouTube</span>
+                  </div>
+                  <div className="text-xs text-gray-500">This is how it will look</div>
+                  <div className="text-green-400 text-sm mt-2">Open →</div>
+                </div>
+              </div>
             </div>
           ) : (
             entries.map((entry) => (

@@ -1,4 +1,36 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+
 export default function Hero() {
+  const [countdown, setCountdown] = useState<string>('');
+
+  useEffect(() => {
+    // 6. juuni 2026 01:00 EEST = 5. juuni 2026 22:00 UTC
+    const targetDate = new Date(Date.UTC(2026, 5, 5, 22, 0, 0));
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = targetDate.getTime() - now.getTime();
+
+      if (diff <= 0) {
+        setCountdown('🚀 Event started!');
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      setCountdown(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+    }
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section className="hero relative min-h-screen flex items-center justify-center bg-black overflow-hidden">
       <div className="absolute inset-0 opacity-30">
@@ -13,6 +45,13 @@ export default function Hero() {
         <p className="text-xl md:text-2xl text-gray-300 mb-6 font-light">
           THIS AIN'T ANOTHER CITY. THIS IS MAINSTREET.
         </p>
+
+        {/* Countdown */}
+        <div className="mb-8 text-3xl md:text-4xl glow-green font-mono font-bold">
+          {countdown ? `⏱️ ${countdown}` : 'Loading...'}
+        </div>
+        <p className="text-gray-400 mb-8 text-lg">Server launch: 6. juuni 2026 kell 1:00 AM EEST</p>
+
         <div className="flex flex-col md:flex-row gap-4 justify-center items-center mt-8">
           <a
             href="https://discord.gg/UXMxcP86"

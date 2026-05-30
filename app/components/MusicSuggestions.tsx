@@ -76,7 +76,7 @@ export default function MusicSuggestions() {
         setEntries(updatedEntries);
         localStorage.setItem('musicSuggestions', JSON.stringify(updatedEntries));
 
-        setMessage('✅ Muusika lisatud! Discord channel'ile saadetud!');
+        setMessage(`✅ Muusika lisatud! Discord channel'ile saadetud!`);
         setFormData({
           artist: '',
           songName: '',
